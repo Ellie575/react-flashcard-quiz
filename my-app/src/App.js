@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import FlashcardList from "./FlashcardList.js";
+import FlashcardList from "./FlashcardList";
 import "./App.css";
 import axios from "axios";
 
