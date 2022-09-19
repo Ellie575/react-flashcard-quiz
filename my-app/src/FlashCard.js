@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
-export default function Flashcard({ flashcard }) {
+export default function FlashCard({ flashcard }) {
   let [flip, setFlip] = useState(false);
   const [height, setHeight] = useState("initial");
 
