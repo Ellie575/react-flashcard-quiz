@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import FlashcardList from "./FlashcardList";
 import "./App.css";
 import axios from "axios";
@@ -6,15 +6,26 @@ import axios from "axios";
 function App() {
   const [flashcards, setFlashcards] = useState(SAMPLE_FLASHCARDS);
 
+  const categoryEl = useRef();
+
+  useEffect(() => {
+    axios.get("https://opentdb.com/api_category.php").then((res) => {
+      console.log(res.data);
+    });
+  }, []);
+
   useEffect(() => {
     axios.get("https://opentdb.com/api.php?amount=10").then((res) => {
       setFlashcards(
         res.data.results.map((questionItem, index) => {
-          const answer = questionItem.correct_answer;
-          const options = [...questionItem.incorrect_answers, answer];
+          const answer = decodeString(questionItem.correct_answer);
+          const options = [
+            ...questionItem.incorrect_answers.map((a) => decodeString(a)),
+            answer,
+          ];
           return {
             id: `${index}-${Date.now()}`,
-            question: questionItem.question,
+            question: decodeString(questionItem.question),
             answer: answer,
             options: options.sort(() => Math.random() - 0.5),
           };
@@ -23,7 +34,29 @@ function App() {
     });
   }, []);
 
-  return <FlashcardList flashcards={flashcards} />;
+  function decodeString(str) {
+    const textArea = document.createElement("textarea");
+    textArea.innerHTML = str;
+    return textArea.value;
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+  }
+
+  return (
+    <>
+      <form className="header" onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="catergory">Category</label>
+          <select id="category" ref={categoryEl}></select>
+        </div>
+      </form>
+      <div className="container">
+        <FlashcardList flashcards={flashcards} />
+      </div>
+    </>
+  );
 }
 
 const SAMPLE_FLASHCARDS = [
